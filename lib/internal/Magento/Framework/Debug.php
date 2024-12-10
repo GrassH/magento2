@@ -40,6 +40,52 @@ class Debug
     }
 
     /**
+     * Formats the code location by generating a relative file path and line number.
+     *
+     * This method processes an input array that contains file path and line number information.
+     * It removes the root path from the file path (if present) to create a relative path
+     * and formats the result as a string in the format "relative/path/to/file.php:line".
+     *
+     * Example Input:
+     * [
+     *     'file' => '/var/www/magento2/app/code/Magento/Test/Block/Test.php',
+     *     'line' => 1
+     * ]
+     *
+     * Example Output:
+     * "app/code/Magento/Test/Block/Test.php:1"
+     *
+     * @param array|null $data An associative array containing:
+     *                         - 'file': The absolute file path (string).
+     *                         - 'line': The line number (int, optional).
+     * @return string A formatted string representing the relative file path and line number,
+     *                or an empty string if the 'file' key is not present.
+     */
+    public static function normalizeCodeLocation(?array $data): string
+    {
+        $fileName = '';
+
+        // Check if 'file' exists in the data array
+        if (isset($data['file'])) {
+            // Determine the position of the root path in the file path
+            $pos = \strpos($data['file'], self::getRootPath());
+
+            // If Magento root path is part of the file path, trim it to create a relative path
+            if (false !== $pos) {
+                $data['file'] = \substr(
+                    $data['file'],
+                    \strlen(self::getRootPath()) + 1
+                );
+            }
+
+            // Format the file path and line number into the desired string format
+            $fileName = \sprintf('%s:%d', $data['file'], $data['line'] ?? 0);
+        }
+
+        return $fileName;
+    }
+
+    /**
      * Prints or returns a backtrace
      *
      * @param bool $return      return or print
@@ -56,10 +102,10 @@ class Debug
     /**
      * Prints or return a trace
      *
-     * @param array $trace      trace array
-     * @param bool $return      return or print
-     * @param bool $html        output in HTML format
-     * @param bool $withArgs    add short arguments of methods
+     * @param array $trace       trace array
+     * @param bool  $return      return or print
+     * @param bool  $html        output in HTML format
+     * @param bool  $withArgs    add short arguments of methods
      * @return string|bool
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -107,15 +153,7 @@ class Debug
                 $methodName = sprintf('%s(%s)', $data['function'], join(', ', $args));
             }
 
-            if (isset($data['file'])) {
-                $pos = strpos($data['file'], self::getRootPath());
-                if ($pos !== false) {
-                    $data['file'] = substr($data['file'], strlen(self::getRootPath()) + 1);
-                }
-                $fileName = sprintf('%s:%d', $data['file'], $data['line']);
-            } else {
-                $fileName = false;
-            }
+            $fileName = self::normalizeCodeLocation($data);
 
             if ($fileName) {
                 $out .= sprintf('#%d %s called at [%s]', $i, $methodName, $fileName);
