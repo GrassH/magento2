@@ -147,7 +147,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
 
         foreach ($exceptions as $index => $exception) {
             $buffer .= sprintf(
-                "Exception #%d (%s): %s thrown at [%s]\n",
+                "Exception #%d (%s): \"%s\" thrown at [%s]\n",
                 $index,
                 get_class($exception),
                 $exception->getMessage(),
@@ -157,7 +157,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
 
         foreach ($exceptions as $index => $exception) {
             $buffer .= sprintf(
-                "\nException #%d (%s): %s thrown at [%s]\n%s\n",
+                "\nException #%d (%s): \"%s\" thrown at [%s]\n%s\n",
                 $index,
                 get_class($exception),
                 $exception->getMessage(),
