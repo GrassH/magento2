@@ -1,8 +1,9 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
  */
+
 namespace Magento\Framework;
 
 /**
@@ -131,6 +132,9 @@ class Debug
                 }
             }
 
+            // Fix static test: 'Variable $methodName might not be defined.'
+            $methodName = '';
+            
             // prepare method's name
             if (isset($data['class']) && isset($data['function'])) {
                 if (isset($data['object']) && get_class($data['object']) != $data['class']) {
