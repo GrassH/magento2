@@ -175,6 +175,8 @@ class Debug
         if ($return) {
             return $out;
         } else {
+            // Fix static test: 'Use of echo language construct is discouraged.'
+            // phpcs:ignore Magento2.Security.LanguageConstruct.DirectOutput
             echo $out;
             return true;
         }
